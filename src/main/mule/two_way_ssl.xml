@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="69783016-2edf-410a-8c77-3153027fa861" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config2" doc:name="HTTP Listener config" doc:id="9621157b-aa76-4325-bcc8-6ef2bf84c155" >
+		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="8082" >
+			<tls:context >
+				<tls:trust-store path="server-truststore1.jks" password="shyam123" type="jks" />
+				<tls:key-store type="jks" path="server-keystore.jks" alias="mule-server" keyPassword="mahesh" password="mahesh" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="87bdf101-13ce-4f39-bfff-aef36271f00c" >
+		<http:request-connection protocol="HTTPS" host="localhost" port="8082" >
+			<tls:context >
+				<tls:trust-store path="client-truststore.jks" password="mahesh" type="jks" />
+				<tls:key-store type="jks" path="client-keystore1.jks" alias="mule-server" keyPassword="shyam123" password="shyam123" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="two_way_sslFlow" doc:id="1e3f7891-ebd0-4951-80ce-fabbbb258ed9" >
+		<http:listener doc:name="Listener" doc:id="55db6ee2-2085-46bf-95d3-6fa102fa3d57" config-ref="HTTP_Listener_config2" path="/test3"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="e1cc4624-204b-4ec9-a713-260429d9067a" />
+	</flow>
+	<flow name="two_way_sslFlow1" doc:id="6568e107-5e50-4139-a32a-352f07e19a93" >
+		<http:listener doc:name="Listener" doc:id="f65fb350-eef8-4688-8457-52ad39e812d2" config-ref="HTTP_Listener_config" path="/test1"/>
+		<http:request method="POST" doc:name="Request" doc:id="9b7d4d8d-f2e9-42a0-b55a-964aed0f35bf" config-ref="HTTP_Request_configuration" path="/test3"/>
+	</flow>
+</mule>
